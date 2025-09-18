@@ -76,7 +76,6 @@
         const submitButton = this.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
         
-        // Показываем загрузку
         submitButton.textContent = '⏳ Отправка...';
         submitButton.disabled = true;
         
@@ -86,7 +85,6 @@
         })
         .then(response => response.text())
         .then(html => {
-            // Обновляем только нужную часть страницы
             document.open();
             document.write(html);
             document.close();
@@ -98,10 +96,10 @@
         });
     });
 
-    // Проверяем соединение при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
         checkConnection();
-        setInterval(checkConnection, 10000); // Проверяем каждые 10 секунд
+        setInterval(checkConnection, 10000);
     });
 </script>
+
 {% endblock %}
