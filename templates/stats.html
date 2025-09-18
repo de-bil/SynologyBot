@@ -72,12 +72,10 @@
 </div>
 
 <script>
-    // Функция для обновления всей статистики
     function updateAllStats() {
         fetch('/api/stats')
             .then(response => response.json())
             .then(data => {
-                // Обновляем основные показатели
                 document.querySelectorAll('.total-requests').forEach(el => {
                     el.textContent = data.total_requests;
                 });
@@ -91,10 +89,8 @@
             .catch(error => console.error('Ошибка обновления статистики:', error));
     }
 
-    // Обновляем статистику каждые 15 секунд
     setInterval(updateAllStats, 15000);
 	
-	   // Функция для обновления таблицы последних запросов
     function updateRecentRequests() {
         const refreshBtn = document.querySelector('button[onclick="updateRecentRequests()"]');
         const originalText = refreshBtn.innerHTML;
@@ -107,28 +103,24 @@
             .then(response => response.json())
             .then(data => {
                 const tbody = document.getElementById('recent-requests-body');
-                tbody.innerHTML = ''; // Очищаем таблицу
+                tbody.innerHTML = '';
                 
                 data.recent_requests.forEach(request => {
                     const row = document.createElement('tr');
                     
-                    // Пользователь
                     const userCell = document.createElement('td');
                     userCell.textContent = request.username;
                     row.appendChild(userCell);
                     
-                    // Вопрос
                     const questionCell = document.createElement('td');
                     questionCell.textContent = request.question.length > 50 ? 
                         request.question.substring(0, 50) + '...' : request.question;
                     row.appendChild(questionCell);
                     
-                    // Категория
                     const categoryCell = document.createElement('td');
                     categoryCell.textContent = request.category;
                     row.appendChild(categoryCell);
                     
-                    // Время
                     const timeCell = document.createElement('td');
                     timeCell.textContent = request.timestamp;
                     row.appendChild(timeCell);
@@ -136,7 +128,6 @@
                     tbody.appendChild(row);
                 });
                 
-                // Показываем уведомление об обновлении
                 showNotification('✅ Таблица обновлена', 'success');
             })
             .catch(error => {
@@ -144,15 +135,12 @@
                 showNotification('❌ Ошибка обновления', 'error');
             })
             .finally(() => {
-                // Восстанавливаем кнопку
                 refreshBtn.innerHTML = originalText;
                 refreshBtn.disabled = false;
             });
     }
     
-    // Функция для показа уведомлений
     function showNotification(message, type) {
-        // Удаляем предыдущие уведомления
         const existingNotification = document.getElementById('update-notification');
         if (existingNotification) {
             existingNotification.remove();
@@ -179,7 +167,6 @@
         notification.textContent = message;
         document.body.appendChild(notification);
         
-        // Автоматическое скрытие через 3 секунды
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
@@ -187,10 +174,8 @@
         }, 3000);
     }
     
-    // Автоматическое обновление каждые 30 секунд
     let autoUpdateInterval = setInterval(updateRecentRequests, 30000);
     
-    // Останавливаем автообновление когда страница не активна
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
             clearInterval(autoUpdateInterval);
@@ -199,17 +184,13 @@
         }
     });
     
-    // Обновляем при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
-        // Первое обновление через 2 секунды после загрузки
         setTimeout(updateRecentRequests, 2000);
     });
-	// Функция для обновления статистики по категориям
 	function updateCategoryStats() {
 		const refreshBtn = document.querySelector('button[onclick="updateCategoryStats()"]');
 		const originalText = refreshBtn.innerHTML;
 		
-		// Показываем индикатор загрузки
 		refreshBtn.innerHTML = '⏳ Загрузка...';
 		refreshBtn.disabled = true;
 		
@@ -222,18 +203,16 @@
 			})
 			.then(data => {
 				const tbody = document.getElementById('category-stats-body');
-				tbody.innerHTML = ''; // Очищаем таблицу
+				tbody.innerHTML = '';
 				
 				if (data.category_stats && data.category_stats.length > 0) {
 					data.category_stats.forEach(item => {
 						const row = document.createElement('tr');
 						
-						// Категория
 						const categoryCell = document.createElement('td');
 						categoryCell.textContent = item.category || 'N/A';
 						row.appendChild(categoryCell);
 						
-						// Количество запросов
 						const countCell = document.createElement('td');
 						countCell.textContent = item.count || 0;
 						row.appendChild(countCell);
@@ -241,7 +220,6 @@
 						tbody.appendChild(row);
 					});
 					
-					// Показываем уведомление об обновлении
 					showNotification('✅ Статистика по категориям обновлена', 'success');
 				} else {
 					showNotification('❌ Нет данных для отображения', 'error');
@@ -252,16 +230,13 @@
 				showNotification('❌ Ошибка обновления статистики: ' + error.message, 'error');
 			})
 			.finally(() => {
-				// Восстанавливаем кнопку
 				refreshBtn.innerHTML = originalText;
 				refreshBtn.disabled = false;
 			});
 	}
 
-	// Автоматическое обновление статистики по категориям каждые 30 секунд
 	let categoryAutoUpdateInterval = setInterval(updateCategoryStats, 30000);
 
-	// Останавливаем автообновление когда страница не активна
 	document.addEventListener('visibilitychange', function() {
 		if (document.hidden) {
 			clearInterval(categoryAutoUpdateInterval);
@@ -270,14 +245,11 @@
 		}
 	});
 
-	// Обновляем при загрузке страницы
 	document.addEventListener('DOMContentLoaded', function() {
-		// Первое обновление через 2 секунды после загрузки
 		setTimeout(updateCategoryStats, 2000);
 	});
 </script>
 <style>
-    /* Стили для анимации обновления */
     #recent-requests table {
         transition: opacity 0.3s ease;
     }
@@ -286,7 +258,6 @@
         opacity: 0.7;
     }
     
-    /* Анимация появления новых строк */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -296,7 +267,6 @@
         animation: fadeIn 0.5s ease;
     }
 	
-	   /* Стили для кнопки обновления */
     .btn {
         transition: all 0.3s ease;
     }
@@ -311,7 +281,6 @@
         cursor: not-allowed;
     }
     
-    /* Анимация вращения для кнопки обновления */
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
@@ -321,4 +290,5 @@
         animation: spin 1s infinite linear;
     }
 </style>
+
 {% endblock %}
