@@ -21,7 +21,6 @@ from collections import defaultdict
 import importlib
 
 def format_timedelta(delta):
-    """Форматирование timedelta в читаемый вид: часы:минуты:секунды"""
     total_seconds = int(delta.total_seconds())
     hours = total_seconds // 3600
     minutes = (total_seconds % 3600) // 60
@@ -42,7 +41,6 @@ load_dotenv()
 
 # Настройка цветного логирования
 class ColorFormatter(logging.Formatter):
-    """Кастомный форматтер для цветного вывода логов"""
     grey = "\x1b[38;21m"
     blue = "\x1b[38;5;39m"
     yellow = "\x1b[38;5;226m"
@@ -70,7 +68,6 @@ class ColorFormatter(logging.Formatter):
 
 # Настройка логирования
 def setup_logging():
-    """Настройка расширенного логирования с цветами"""
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     
@@ -91,7 +88,6 @@ def setup_logging():
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(console_formatter)
     
-    # Добавляем обработчики
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
     
@@ -153,7 +149,6 @@ def api_stats():
 
 @app.route('/api/health', methods=['GET'])
 def api_health():
-    """API для проверки здоровья"""
     return jsonify({
         'status': 'active',
         'bot_name': bot.bot_name,
@@ -167,7 +162,6 @@ class StatisticsDB:
         self.init_db()
     
     def init_db(self):
-        """Инициализация базы данных для статистики"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
@@ -216,7 +210,6 @@ class StatisticsDB:
         return request_id
     
     def log_response(self, request_id, response_text, category, has_buttons=False):
-        """Логирование ответа бота"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
@@ -325,7 +318,6 @@ class SynologyChatBot:
 
     def send_message(self, text: str, user_id: Optional[str] = None, 
                     channel: Optional[str] = None) -> bool:
-        """Отправка сообщения в Synology Chat (без поддержки картинок)"""
         
         payload_data = {
             "text": text,
@@ -510,11 +502,9 @@ class SynologyChatBot:
             response_text = self.get_main_menu()
             category = 'main_menu'
         
-        # ОБНОВЛЯЕМ КАТЕГОРИЮ В БАЗЕ ДАННЫХ, если request_id существует и категория не ошибка
         if request_id and category != 'error':
             self._update_request_category(request_id, category)
         
-        # Логируем ответ
         if request_id:
             self.stats_db.log_response(request_id, response_text, category)
         
@@ -525,11 +515,9 @@ bot = SynologyChatBot()
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    """Webhook endpoint для получения сообщений от Synology Chat"""
     try:
         logger.info("🌐 Получен запрос на webhook")
         
-        # Synology Chat отправляет данные как form-data
         data = request.form
         
         if not data:
@@ -538,7 +526,6 @@ def webhook():
         
         logger.info(f"📋 Полученные данные формы: {dict(data)}")
         
-        # Извлекаем информацию о сообщении
         message_text = data.get('text', '').strip()
         user_id = data.get('user_id')
         channel = data.get('channel_name')
@@ -550,10 +537,8 @@ def webhook():
         
         logger.info(f"👤 Сообщение от {username} ({user_id}): '{message_text}'")
         
-        # Обрабатываем вопрос
         response_data = bot.process_question(message_text, user_id, username)
         
-        # Отправляем ответ (без картинок)
         success = bot.send_message(
             response_data['text'], 
             user_id, 
@@ -577,7 +562,6 @@ def webhook():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Endpoint для проверки работоспособности"""
     logger.info("🔍 Проверка здоровья сервиса")
     return render_template('health.html', 
                          bot_name=bot.bot_name,
@@ -587,7 +571,6 @@ def health_check():
 
 @app.route('/test', methods=['GET'])
 def test_bot():
-    """Тестовый endpoint для проверки отправки сообщений"""
     logger.info("🧪 Запуск тестового сообщения")
     return render_template('test.html',
                          bot_name=bot.bot_name,
@@ -597,7 +580,6 @@ def test_bot():
 
 @app.route('/stats', methods=['GET'])
 def statistics():
-    """Endpoint для получения статистики"""
     logger.info("📊 Запрос статистики бота")
     stats = bot.stats_db.get_statistics()
     return render_template('stats.html',
@@ -608,7 +590,6 @@ def statistics():
 
 @app.route('/', methods=['GET'])
 def index():
-    """Главная страница"""
     logger.info("🏠 Запрос главной страницы")
     return render_template('index.html',
                          bot_name=bot.bot_name,
@@ -618,7 +599,6 @@ def index():
                          
 @app.route('/send_test', methods=['POST'])
 def send_test_message():
-    """Отправка тестового сообщения"""
     message = request.form.get('message', 'Тестовое сообщение')
     logger.info(f"🧪 Отправка тестового сообщения: '{message}'")
     
@@ -641,7 +621,6 @@ def send_test_message():
                              
 @app.route('/api/category-stats', methods=['GET'])
 def api_category_stats():
-    """API для получения статистики по категориям"""
     stats = bot.stats_db.get_statistics()
     return jsonify({
         'category_stats': [
@@ -653,11 +632,9 @@ def api_category_stats():
         ]
     })
 
-# Создаем папку для шаблонов
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
 os.makedirs(templates_dir, exist_ok=True)
 
-# Глобальная переменная для времени старта
 start_time = datetime.datetime.now()
 
 if __name__ == '__main__':
@@ -672,7 +649,6 @@ if __name__ == '__main__':
     logger.info(f"📊 Статистика: http://{host}:{port}/stats")
     logger.info(f"🏠 Главная страница: http://{host}:{port}/")
     
-    # Добавьте информацию о локальном IP адресе
     try:
         import socket
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -684,4 +660,5 @@ if __name__ == '__main__':
     except Exception as e:
         logger.info(f"⚠️ Не удалось определить локальный IP адрес: {e}")
     
+
     app.run(host=host, port=port, debug=debug, threaded=True)
