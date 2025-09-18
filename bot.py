@@ -265,7 +265,7 @@ class StatisticsDB:
 class SynologyChatBot:
     def __init__(self):
         # Чтение настроек из .env файла
-        self.incoming_url = os.getenv('SYNOLOGY_INCOMING_URL', 'https://192-168-10-203.spbuor1.direct.quickconnect.to:5001/webapi/entry.cgi?api=SYNO.Chat.External&method=chatbot&version=2&token=i8ppUgMTrUX7s极会TrUX7s3v9MGBt3RhP6Eoef2Mcs43SdTIX0DV0JG88Qpd6SP6B0esmvRBs')
+        self.incoming_url = os.getenv('SYNOLOGY_INCOMING_URL', 'ввести url')
         self.bot_name = os.getenv('BOT_NAME', 'ИнструкторБот')
         self.port = os.getenv('FLASK_PORT', '5000')
         
@@ -662,3 +662,4 @@ if __name__ == '__main__':
     
 
     app.run(host=host, port=port, debug=debug, threaded=True)
+
