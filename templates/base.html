@@ -125,7 +125,6 @@
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.9);
         }
-		/* Анимации для обновления данных */
 		.stat-number {
 			transition: all 0.3s ease;
 		}
@@ -135,7 +134,6 @@
 			transform: scale(1.05);
 		}
 
-		/* Мигающая анимация для обновления */
 		@keyframes blink {
 			0% { opacity: 1; }
 			50% { opacity: 0.5; }
@@ -160,7 +158,6 @@
 
         {% block content %}{% endblock %}
 		 <script>
-        // Функция для обновления времени работы на всех страницах
         function updateUptime() {
             fetch('/api/uptime')
                 .then(response => response.json())
@@ -222,3 +219,4 @@
 </body>
 
 </html>
+
