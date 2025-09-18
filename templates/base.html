@@ -173,24 +173,20 @@
                 .catch(error => console.error('Ошибка обновления времени:', error));
         }
 
-        // Функция для обновления статистики
         function updateStats() {
             fetch('/api/stats')
                 .then(response => response.json())
                 .then(data => {
-                    // Обновляем общее количество запросов
                     const totalRequestsElements = document.querySelectorAll('.total-requests');
                     totalRequestsElements.forEach(element => {
                         element.textContent = data.total_requests;
                     });
 
-                    // Обновляем количество уникальных пользователей
                     const uniqueUsersElements = document.querySelectorAll('.unique-users');
                     uniqueUsersElements.forEach(element => {
                         element.textContent = data.unique_users;
                     });
 
-                    // Обновляем время работы
                     const uptimeElements = document.querySelectorAll('.uptime-display');
                     uptimeElements.forEach(element => {
                         element.textContent = data.uptime;
@@ -199,23 +195,18 @@
                 .catch(error => console.error('Ошибка обновления статистики:', error));
         }
 
-        // Обновляем данные каждые 5 секунд
         document.addEventListener('DOMContentLoaded', function() {
-            // Первоначальное обновление
             updateUptime();
             updateStats();
 
-            // Периодическое обновление
             setInterval(updateUptime, 5000);
             setInterval(updateStats, 10000); // Статистику обновляем реже
         });
 
-        // Функция для форматирования времени
         function formatTime(date) {
             return date.toLocaleTimeString('ru-RU');
         }
 
-        // Обновление текущего времени
         function updateCurrentTime() {
             const timeElements = document.querySelectorAll('.current-time');
             const now = new Date();
@@ -224,10 +215,10 @@
             });
         }
 
-        // Запуск обновления текущего времени
         setInterval(updateCurrentTime, 1000);
         updateCurrentTime();
     </script>
     </div>
 </body>
+
 </html>
