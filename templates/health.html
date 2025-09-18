@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <h2>🔍 Проверка здоровья сервиса</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>🟢 Статус</h3>
+            <div class="stat-number">Активен</div>
+            <p>Сервис работает нормально</p>
+        </div>
+        <div class="stat-card">
+            <h3>🤖 Бот</h3>
+            <div class="stat-number">{{ bot_name }}</div>
+            <p>Имя бота</p>
+        </div>
+        <div class="stat-card">
+            <h3>⏱️ Время работы</h3>
+            <div class="stat-number uptime-display">{{ uptime }}</div>
+            <p>С момента запуска</p>
+        </div>
+    </div>
+
+    <div class="content">
+        <h3>🌐 Webhook информация</h3>
+        <p><strong>URL:</strong> http://192.168.10.219:{{ port }}/webhook</p>
+        <p><strong>Метод:</strong> POST</p>
+        <p><strong>Статус:</strong> <span id="webhook-status">✅ Проверка...</span></p>
+    </div>
+
+    <div class="content">
+        <h3>📋 Системная информация</h3>
+        <p><strong>Версия Python:</strong> 3.8+</p>
+        <p><strong>Фреймворк:</strong> Flask</p>
+        <p><strong>База данных:</strong> SQLite (для статистики)</p>
+        <p><strong>Логирование:</strong> Включено (synology_bot.log)</p>
+    </div>
+</div>
+
+<script>
+    // Проверка статуса webhook
+    function checkWebhookStatus() {
+        fetch('/health')
+            .then(response => {
+                const statusElement = document.getElementById('webhook-status');
+                if (response.ok) {
+                    statusElement.innerHTML = '✅ Активен и готов к работе';
+                    statusElement.style.color = '#4CAF50';
+                } else {
+                    statusElement.innerHTML = '❌ Ошибка подключения';
+                    statusElement.style.color = '#f44336';
+                }
+            })
+            .catch(error => {
+                const statusElement = document.getElementById('webhook-status');
+                statusElement.innerHTML = '❌ Ошибка подключения';
+                statusElement.style.color = '#f44336';
+            });
+    }
+
+    // Проверяем статус при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        checkWebhookStatus();
+        setInterval(checkWebhookStatus, 30000); // Проверяем каждые 30 секунд
+    });
+</script>
+{% endblock %}

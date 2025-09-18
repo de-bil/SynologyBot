@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <h2>🚀 Добро пожаловать в Synology Chat Bot!</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>🟢 Статус</h3>
+            <div class="stat-number">Активен</div>
+            <p>Сервис работает нормально</p>
+        </div>
+        <div class="stat-card">
+            <h3>⏱️ Время работы</h3>
+            <div class="stat-number uptime-display">{{ uptime }}</div>
+            <p>С момента запуска</p>
+        </div>
+        <div class="stat-card">
+            <h3>🌐 Порт</h3>
+            <div class="stat-number">{{ port }}</div>
+            <p>Webhook порт</p>
+        </div>
+    </div>
+
+    <div class="content">
+        <h3>🎯 Возможности бота</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>🖥️ DSM</h4>
+                <p>Система управления Synology</p>
+            </div>
+            <div class="stat-card">
+                <h4>💾 Backup</h4>
+                <p>Резервное копирование</p>
+            </div>
+            <div class="stat-card">
+                <h4>📁 Файлы</h4>
+                <p>Управление файлами</p>
+            </div>
+            <div class="stat-card">
+                <h4>🛡️ Безопасность</h4>
+                <p>Защита и безопасность</p>
+            </div>
+            <div class="stat-card">
+                <h4>🐳 Docker</h4>
+                <p>Контейнеры и приложения</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

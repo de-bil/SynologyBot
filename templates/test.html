@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <h2>🧪 Тест отправки сообщений</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>⏱️ Время работы</h3>
+            <div class="stat-number uptime-display">{{ uptime }}</div>
+            <p>С момента запуска</p>
+        </div>
+    </div>
+    
+    {% if message %}
+    <div class="content" style="background: {% if '✅' in message %}rgba(76, 175, 80, 0.2){% else %}rgba(244, 67, 54, 0.2){% endif %}; border-left: 4px solid {% if '✅' in message %}#4CAF50{% else %}#f44336{% endif %};">
+        <h3>📋 Результат:</h3>
+        <p>{{ message }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="test-form">
+        <h3>📨 Тестовая отправка сообщения</h3>
+        <p>Отправьте тестовое сообщение для проверки работы бота:</p>
+        
+        <form action="/send_test" method="POST" id="test-form">
+            <div class="form-group">
+                <label for="message">Сообщение:</label>
+                <textarea id="message" name="message" rows="4" placeholder="Введите тестовое сообщение...">Привет! Тестовое сообщение</textarea>
+            </div>
+            <button type="submit" class="btn">📤 Отправить тест</button>
+        </form>
+    </div>
+
+    <div class="content">
+        <h3>📊 Информация о тестировании</h3>
+        <p>Этот тест проверит:</p>
+        <ul>
+            <li>✅ Соединение с Synology Chat</li>
+            <li>✅ Корректность webhook URL</li>
+            <li>✅ Обработку сообщений ботом</li>
+            <li>✅ Формирование ответов</li>
+        </ul>
+        
+        <p><strong>Webhook URL:</strong> http://192.168.10.219:{{ port }}/webhook</p>
+        <p><strong>Статус:</strong> <span id="connection-status">✅ Проверка...</span></p>
+    </div>
+</div>
+
+<script>
+    // Проверка соединения с сервером
+    function checkConnection() {
+        fetch('/api/health')
+            .then(response => {
+                const statusElement = document.getElementById('connection-status');
+                if (response.ok) {
+                    statusElement.innerHTML = '✅ Соединение установлено';
+                    statusElement.style.color = '#4CAF50';
+                } else {
+                    statusElement.innerHTML = '❌ Ошибка соединения';
+                    statusElement.style.color = '#f44336';
+                }
+            })
+            .catch(error => {
+                const statusElement = document.getElementById('connection-status');
+                statusElement.innerHTML = '❌ Ошибка соединения';
+                statusElement.style.color = '#f44336';
+            });
+    }
+
+    // AJAX отправка формы
+    document.getElementById('test-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        // Показываем загрузку
+        submitButton.textContent = '⏳ Отправка...';
+        submitButton.disabled = true;
+        
+        fetch('/send_test', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Обновляем только нужную часть страницы
+            document.open();
+            document.write(html);
+            document.close();
+        })
+        .catch(error => {
+            alert('Ошибка при отправке: ' + error);
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+        });
+    });
+
+    // Проверяем соединение при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        checkConnection();
+        setInterval(checkConnection, 10000); // Проверяем каждые 10 секунд
+    });
+</script>
+{% endblock %}
